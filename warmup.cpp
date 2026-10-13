@@ -135,7 +135,7 @@ int main() {
         if (morningWeights[i] > 0 && morningWeights[i] <= 80) {
             valids++;
             thisrun++;
-            if(i == morningWeights.size(); -1){
+            if(i == morningWeights.size() - 1){
                 if(thisrun > longestrun){
                 longestrun = thisrun;
             }
@@ -169,11 +169,47 @@ int main() {
     // =================================================================
 
     cout << "=== Q2 ===\n";
-
-
-
-
-
+    int gradeAcount = 0;
+    int gradeAtotal = 0;
+    int gradeAavg = 0;
+    int gradeBcount = 0;
+    int gradeBtotal = 0;
+    int gradeBavg = 0;
+    int gradeCcount = 0;
+    int gradeCtotal = 0;
+    int gradeCavg = 0;
+    for (int i = 0; i < logbook.size(); i++)
+    {
+        switch (logbook[i].grade)
+        {
+        case 'A':
+            gradeAcount++;
+            gradeAtotal += logbook[i].kg;
+            break;
+        case 'B':
+            gradeBcount++;
+            gradeBtotal += logbook[i].kg;
+            break;
+        case 'C':
+            gradeCcount++;
+            gradeCtotal += logbook[i].kg;
+            break;
+        }
+    }
+    if (gradeAcount > 0) {
+        gradeAavg = gradeAtotal / gradeAcount;
+    }
+    if (gradeBcount > 0) {
+        gradeBavg = gradeBtotal / gradeBcount;
+    }
+    if (gradeCcount > 0) {
+        gradeCavg = gradeCtotal / gradeCcount;
+    }
+    cout << "Grade A: " << gradeAcount << " deliveries, " << gradeAtotal << " kg total, " << gradeAavg << " kg average" << '\n';
+    cout << "Grade B: " << gradeBcount << " deliveries, " << gradeBtotal << " kg total, " << gradeBavg << " kg average" << '\n';
+    cout << "Grade C: " << gradeCcount << " deliveries, " << gradeAtotal << " kg total, " << gradeAavg << " kg average" << '\n';
+    int bestavg = max(gradeAavg,max(gradeBavg,gradeCavg));
+    cout << "Best average: " << bestavg;
     cout << "\n";
 
 
