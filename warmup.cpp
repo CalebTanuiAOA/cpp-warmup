@@ -14,6 +14,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <cmath>
 #include <algorithm>
 using namespace std;
 
@@ -121,12 +122,45 @@ int main() {
     // =================================================================
 
     cout << "=== Q1 ===\n";
+    double total = 0.0;
+    int valids = 0;
+    double maxWeight = morningWeights[0];
+    int heaviestpos = 0;
+    int thisrun = 0;
+    int longestrun = 0;
 
+    for (int i = 0; i < morningWeights.size(); i++) {
+        total += morningWeights[i];
 
+        if (morningWeights[i] > 0 && morningWeights[i] <= 80) {
+            valids++;
+            thisrun++;
+            if(i == morningWeights.size(); -1){
+                if(thisrun > longestrun){
+                longestrun = thisrun;
+            }
+            }
+        }else{
+            if(thisrun > longestrun){
+                longestrun = thisrun;
+            }
+            thisrun = 0;
+        }
 
+        if (morningWeights[i] > maxWeight) {
+            maxWeight = morningWeights[i];
+            heaviestpos = i;
+        }
+    }
 
+    if (thisrun > longestrun) {
+        longestrun = thisrun;
+    }
 
-    cout << "\n";
+    cout << "Total: " << total << "\n";
+    cout << "Valid: " << valids << " of " << morningWeights.size() << "\n";
+    cout << "Heaviest: " << maxWeight << "kg at position " << heaviestpos << "\n";
+    cout << "Longest valid run: " << longestrun << "\n";
 
 
     // =================================================================
