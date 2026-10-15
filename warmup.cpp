@@ -102,6 +102,7 @@ int main() {
 
 
  int findFarmer(const vector<Delivery> &log, string name);
+ double payment(double kg, char grade);
     int gradeACount = 0;
     Delivery heaviest = logbook[0];        // start from a REAL entry,
                                            // never from a made-up 0
@@ -260,7 +261,18 @@ int main() {
 
     cout << "=== Q4 ===\n";
 
-
+    double paid = 0;
+    for(int i = 0; i < logbook.size(); i++){
+        if(paid > 100000){
+            cout << logbook[i].farmer << " " << logbook[i].kg << " kg grade " << logbook[i].grade << " -> "<<  (payment(logbook[i].kg,logbook[i].grade)/2) << " (halved)" << endl;
+            paid += ((payment(logbook[i].kg,logbook[i].grade))/2);
+        }
+        else{
+            cout << logbook[i].farmer << " " << logbook[i].kg << " kg grade " << logbook[i].grade << " -> "<<  (payment(logbook[i].kg,logbook[i].grade)) << endl;
+            paid += (payment(logbook[i].kg,logbook[i].grade));
+        }
+    }
+    cout << "Total paid: " << paid << endl;
 
 
 
@@ -351,7 +363,15 @@ int main() {
 //      Grade A pays 10% above the rate, B pays the rate,
 //      anything else pays 20% below it. The rate is 450.
 //
-// double payment(double kg, char grade) {
-//
-// }
-
+ double payment(double kg, char grade) {
+    if(grade == 'A'){
+        return 1.1*450*kg;
+    }
+    else{
+        if(grade == 'B'){
+            return 450*kg;
+        }else{
+            return 0.8*450*kg;
+        }
+    }
+}
