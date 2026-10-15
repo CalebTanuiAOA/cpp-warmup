@@ -15,6 +15,8 @@
 #include <string>
 #include <vector>
 #include <cmath>
+#include <bits/stdc++.h>
+#include <unordered_map>
 #include <algorithm>
 using namespace std;
 
@@ -98,6 +100,8 @@ int main() {
     //  heaviest single delivery in the whole logbook?
     // =================================================================
 
+
+ int findFarmer(const vector<Delivery> &log, string name);
     int gradeACount = 0;
     Delivery heaviest = logbook[0];        // start from a REAL entry,
                                            // never from a made-up 0
@@ -219,10 +223,32 @@ int main() {
     // =================================================================
 
     cout << "=== Q3 ===\n";
-
-
-
-
+    cout << "findFarmer(Isanda) = " << findFarmer(logbook,"Isanda") << endl;
+    cout << "findFarmer(Mukamana) = " << findFarmer(logbook,"Mukamana") << endl;
+    unordered_map<string,int> deliveryCounts;
+    unordered_map<string,double> deliverytotalKGS;
+    for(int i = 0; i < logbook.size();i++){
+        deliveryCounts[logbook[i].farmer]++;
+        deliverytotalKGS[logbook[i].farmer] += logbook[i].kg;
+    }
+    string topdeliveries = "";
+    int maxdelivcount = 0;
+    for (const auto& [deliverer, count] : deliveryCounts) {
+        if (count > maxdelivcount) {
+            maxdelivcount = count;
+            topdeliveries = deliverer;
+        }
+    }
+    cout << "Most deliveries: " << topdeliveries << "(" << maxdelivcount << ")"  << endl;
+    string topdelivweightowner = "";
+    int maxdelivweight = 0;
+    for (const auto& [deliverer, weight] : deliverytotalKGS) {
+        if (weight > maxdelivweight) {
+            maxdelivweight = weight;
+            topdelivweightowner = deliverer;
+        }
+    }
+    cout << "Most kg: " << topdelivweightowner << " (" << maxdelivweight << ")" << endl;
 
     cout << "\n";
 
@@ -305,10 +331,20 @@ int main() {
 
 // Q3:  return the position of the first delivery by this farmer,
 //      or -1 if the farmer is not in the log at all.
-//
-// int findFarmer(const vector<Delivery> &log, string name) {
-//
-// }
+
+ int findFarmer(const vector<Delivery> &log, string name) {
+    int n = log.size();
+    int found = -1;
+    for (int i = 0; i < n; i++)
+    {
+        if(log[i].farmer == name){
+            found = i;
+            break;
+        }
+    }
+    return found;
+    
+ }
 
 
 // Q4:  what one delivery earns, before any cap is applied.
@@ -318,3 +354,4 @@ int main() {
 // double payment(double kg, char grade) {
 //
 // }
+
