@@ -204,7 +204,6 @@ A record is acceptable when **all** of these hold:
 
 Print each record as ACCEPT, or REJECT with **the first rule it broke**,
 checking in the order of the table above. Then print the totals.
-
 ```
 === Q5 ===
 F012 ACCEPT
@@ -304,7 +303,7 @@ Grade then weight: AOnyinye(72) AKeza(45.5) AKarimi(31) AKarimi(31) AIsanda(20) 
 **Uses:** `logbook` · *nested loops vs a single pass*
 
 Somebody typed a delivery into the logbook twice. Find records that look like
-accidental double-entries — **same farmer, same weight** — under two different
+accidental double-entries — **same farmer, same weight. same grade** — under two different
 definitions:
 
 1. only when the two sit **next to each other** in the log

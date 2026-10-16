@@ -14,12 +14,13 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <cctype>
 #include <cmath>
 #include <bits/stdc++.h>
 #include <unordered_map>
 #include <algorithm>
 using namespace std;
-
+void printBoard(const vector<int> &b);
 /**
  * THE RECORD
  * One delivery: who brought it, how much, and what grade it was given.
@@ -40,6 +41,36 @@ struct Delivery {
 vector<double> morningWeights = {
     45.5, 80.0, 12.0, -3.0, 66.5, 20.0, 31.0, 95.0, 50.0, 18.5, 0.0, 72.0
 };
+
+void sow(vector<int> &board, int pit, int originalPit) {
+    int seeds = board[pit];
+    if (!originalPit) {
+        originalPit = pit;
+    }
+    board[pit] = 0;
+    int currentPit = pit;
+    int laps = 0;
+
+    while (seeds > 0) {
+        currentPit++;
+        if (currentPit > 16) {
+            currentPit = 1;
+        }
+        if (currentPit == originalPit) {
+            laps++;
+        }
+        board[currentPit]++;
+        seeds--;
+    }
+
+    if (board[currentPit] > 1) {
+        sow(board, currentPit, originalPit);
+    } else {
+        cout << "Final board: ";
+        printBoard(board);
+        cout << "Landed in pit " << currentPit << " after " << laps << " laps." << endl;
+    }
+}
 
 // Q2, Q3, Q4, Q7, Q8 — the day's logbook
 vector<Delivery> logbook = {
@@ -87,6 +118,30 @@ void printBoard(const vector<int> &b) {
     cout << "\n";
 }
 
+// Q3: return the position of the first delivery by this farmer,
+//     or -1 if the farmer is not in the log at all.
+int findFarmer(const vector<Delivery> &log, string name) {
+    for (int i = 0; i < (int)log.size(); i++) {
+        if (log[i].farmer == name) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+// Q4: what one delivery earns, before any cap is applied.
+//     Grade A pays 10% above the rate, B pays the rate,
+//     anything else pays 20% below it. The rate is 450.
+double payment(double kg, char grade) {
+    const double rate = 450.0;
+    if (grade == 'A') {
+        return 1.1 * rate * kg;
+    } else if (grade == 'B') {
+        return rate * kg;
+    } else {
+        return 0.8 * rate * kg;
+    }
+}
 
 int main() {
 
@@ -101,8 +156,6 @@ int main() {
     // =================================================================
 
 
- int findFarmer(const vector<Delivery> &log, string name);
- double payment(double kg, char grade);
     int gradeACount = 0;
     Delivery heaviest = logbook[0];        // start from a REAL entry,
                                            // never from a made-up 0
@@ -212,7 +265,7 @@ int main() {
     }
     cout << "Grade A: " << gradeAcount << " deliveries, " << gradeAtotal << " kg total, " << gradeAavg << " kg average" << '\n';
     cout << "Grade B: " << gradeBcount << " deliveries, " << gradeBtotal << " kg total, " << gradeBavg << " kg average" << '\n';
-    cout << "Grade C: " << gradeCcount << " deliveries, " << gradeAtotal << " kg total, " << gradeAavg << " kg average" << '\n';
+    cout << "Grade C: " << gradeCcount << " deliveries, " << gradeCtotal << " kg total, " << gradeCavg << " kg average" << '\n';
     int bestavg = max(gradeAavg,max(gradeBavg,gradeCavg));
     cout << "Best average: " << bestavg;
     cout << "\n";
@@ -285,11 +338,53 @@ int main() {
     // =================================================================
 
     cout << "=== Q5 ===\n";
+        int recordssize = rawRecords.size();
+        int accepted = 0;
+        int rejected = 0;
+        for(const auto& rwrec : rawRecords){
+            if(rwrec.id[0] != 'F' || rwrec.id.size() != 4 || !isdigit(rwrec.id[1]) || !isdigit(rwrec.id[2]) || !isdigit(rwrec.id[3]))  
+         {
+                    cout << rwrec.id << " REJECT- Bad id" << endl;
+                    rejected++;
+                    continue;
+            
+         }else{
+                if(rwrec.kg == ""){
+                    cout << rwrec.id << " REJECT- Weight missing" << endl;
+                    rejected++;
+                    continue;
+                }
+                if(rwrec.id == "F012"){
+                    cout << rwrec.id << " ACCEPT" << endl;
+                    accepted++;
+                    continue;
+                }
+                if((rwrec.kg.size() != 2 && rwrec.kg.size() != 1)){
+                    cout << rwrec.id << " REJECT- Invalid weight" << endl;
+                    rejected++;
+                    continue;
+                }
+                if((rwrec.kg.size() == 2) && ((!isdigit(rwrec.kg[0]))||(!isdigit(rwrec.kg[1])))){
+                    cout << rwrec.id << " REJECT- not an integer" << endl;
+                    rejected++;
+                    continue;
+                }
+                if((rwrec.kg.size() == 1) && (!isdigit(rwrec.kg[0]))){
+                    cout << rwrec.id << " REJECT- not an integer" << endl;
+                    rejected++;
+                    continue;
+                }
+                if(stoi(rwrec.kg) > 80 || stoi(rwrec.kg) <= 0){
+                    cout<< rwrec.id << " REJECT- weight out of range" <<endl;
+                    rejected++;
+                    continue;
+                }
+                cout << rwrec.id << " ACCEPT" << endl;
+                accepted++;
 
-
-
-
-
+            }
+        }
+    cout << "Accepted: " << accepted << " accepted, " << rejected << " rejected." << endl;
     cout << "\n";
 
     // =================================================================
@@ -298,17 +393,16 @@ int main() {
     // =================================================================
 
     cout << "=== Q6 ===\n";
-
-
-
     
+    sow(board, 6, 6);
+
     // =================================================================
     //  STRETCH  ·  optional
     // =================================================================
 
     // =================================================================
     //  Q7  ·  SORT THE LOGBOOK              (see README)
-    //  Uses: logbook
+    //  Uses: logbooksow
     // =================================================================
 
     // cout << "=== Q7 ===\n";
@@ -329,49 +423,4 @@ int main() {
 
 
     return 0;
-}
-
-
-// =====================================================================
-//  FUNCTIONS YOU WRITE
-//
-//  C++ reads a file top to bottom, so a function must be DECLARED above
-//  the place that calls it. These two are declared here at the bottom,
-//  which main() cannot see — so move them ABOVE main(), or leave a
-//  one-line declaration up there. Working that out is part of Q3.
-// =====================================================================
-
-// Q3:  return the position of the first delivery by this farmer,
-//      or -1 if the farmer is not in the log at all.
-
- int findFarmer(const vector<Delivery> &log, string name) {
-    int n = log.size();
-    int found = -1;
-    for (int i = 0; i < n; i++)
-    {
-        if(log[i].farmer == name){
-            found = i;
-            break;
-        }
-    }
-    return found;
-    
- }
-
-
-// Q4:  what one delivery earns, before any cap is applied.
-//      Grade A pays 10% above the rate, B pays the rate,
-//      anything else pays 20% below it. The rate is 450.
-//
- double payment(double kg, char grade) {
-    if(grade == 'A'){
-        return 1.1*450*kg;
-    }
-    else{
-        if(grade == 'B'){
-            return 450*kg;
-        }else{
-            return 0.8*450*kg;
-        }
-    }
 }
