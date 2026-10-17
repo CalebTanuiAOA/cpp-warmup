@@ -44,32 +44,38 @@ vector<double> morningWeights = {
 
 void sow(vector<int> &board, int pit, int originalPit) {
     int seeds = board[pit];
-    if (!originalPit) {
+
+    if (originalPit == 0) {
         originalPit = pit;
     }
+
     board[pit] = 0;
     int currentPit = pit;
     int laps = 0;
 
     while (seeds > 0) {
-        currentPit++;
-        if (currentPit > 16) {
-            currentPit = 1;
-        }
+        currentPit = (currentPit % 16) + 1;
+
+        // Count one lap whenever we return to the original pit.
         if (currentPit == originalPit) {
             laps++;
         }
+
         board[currentPit]++;
         seeds--;
+
+        // Pick up the seeds and continue sowing if the
+        // final seed lands in a pit containing more than one seed.
+        if (seeds == 0 && board[currentPit] > 1) {
+            seeds = board[currentPit];
+            board[currentPit] = 0;
+        }
     }
 
-    if (board[currentPit] > 1) {
-        sow(board, currentPit, originalPit);
-    } else {
-        cout << "Final board: ";
-        printBoard(board);
-        cout << "Landed in pit " << currentPit << " after " << laps << " laps." << endl;
-    }
+    cout << "Final board: ";
+    printBoard(board);
+    cout << "Landed in pit " << currentPit
+         << " after " << laps << " laps." << endl;
 }
 
 // Q2, Q3, Q4, Q7, Q8 — the day's logbook
@@ -338,52 +344,63 @@ int main() {
     // =================================================================
 
     cout << "=== Q5 ===\n";
-        int recordssize = rawRecords.size();
-        int accepted = 0;
-        int rejected = 0;
-        for(const auto& rwrec : rawRecords){
-            if(rwrec.id[0] != 'F' || rwrec.id.size() != 4 || !isdigit(rwrec.id[1]) || !isdigit(rwrec.id[2]) || !isdigit(rwrec.id[3]))  
-         {
-                    cout << rwrec.id << " REJECT- Bad id" << endl;
-                    rejected++;
-                    continue;
-            
-         }else{
-                if(rwrec.kg == ""){
-                    cout << rwrec.id << " REJECT- Weight missing" << endl;
-                    rejected++;
-                    continue;
-                }
-                if(rwrec.id == "F012"){
-                    cout << rwrec.id << " ACCEPT" << endl;
-                    accepted++;
-                    continue;
-                }
-                if((rwrec.kg.size() != 2 && rwrec.kg.size() != 1)){
-                    cout << rwrec.id << " REJECT- Invalid weight" << endl;
-                    rejected++;
-                    continue;
-                }
-                if((rwrec.kg.size() == 2) && ((!isdigit(rwrec.kg[0]))||(!isdigit(rwrec.kg[1])))){
-                    cout << rwrec.id << " REJECT- not an integer" << endl;
-                    rejected++;
-                    continue;
-                }
-                if((rwrec.kg.size() == 1) && (!isdigit(rwrec.kg[0]))){
-                    cout << rwrec.id << " REJECT- not an integer" << endl;
-                    rejected++;
-                    continue;
-                }
-                if(stoi(rwrec.kg) > 80 || stoi(rwrec.kg) <= 0){
-                    cout<< rwrec.id << " REJECT- weight out of range" <<endl;
-                    rejected++;
-                    continue;
-                }
-                cout << rwrec.id << " ACCEPT" << endl;
-                accepted++;
+    int accepted = 0;
+    int rejected = 0;
 
-            }
+    for (const auto &record : rawRecords) {
+        const string &id = record.id;
+        const string &kgText = record.kg;
+
+        if (id.size() != 4 || id[0] != 'F' ||
+            !isdigit(static_cast<unsigned char>(id[1])) ||
+            !isdigit(static_cast<unsigned char>(id[2])) ||
+            !isdigit(static_cast<unsigned char>(id[3]))) {
+            cout << id << " REJECT - bad id\n";
+            rejected++;
+            continue;
         }
+
+        if (kgText.empty()) {
+            cout << id << " REJECT - weight missing\n";
+            rejected++;
+            continue;
+        }
+
+        double kg = 0.0;
+        bool validNumber = true;
+        try {
+            size_t used = 0;
+            kg = stod(kgText, &used);
+            validNumber = used == kgText.size();
+        } catch (const invalid_argument &) {
+            validNumber = false;
+        } catch (const out_of_range &) {
+            validNumber = false;
+        }
+
+        if (!validNumber) {
+            cout << id << " REJECT - weight not a number\n";
+            rejected++;
+            continue;
+        }
+
+        if (kg <= 0 || kg > 80) {
+            cout << id << " REJECT - weight out of range\n";
+            rejected++;
+            continue;
+        }
+
+        char grade = toupper(static_cast<unsigned char>(record.grade));
+        if (grade != 'A' && grade != 'B' && grade != 'C') {
+            cout << id << " REJECT - unknown grade\n";
+            rejected++;
+            continue;
+        }
+
+        cout << id << " ACCEPT\n";
+        accepted++;
+    }
+
     cout << "Accepted: " << accepted << " accepted, " << rejected << " rejected." << endl;
     cout << "\n";
 
